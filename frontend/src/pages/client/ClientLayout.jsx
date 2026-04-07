@@ -1,4 +1,4 @@
-import { LayoutDashboard, PlusSquare, FolderOpen, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, PlusSquare, FolderOpen, MessageSquare, User } from 'lucide-react';
 import RoleDashboardLayout from '../shared/RoleDashboardLayout';
 
 const links = [
@@ -6,6 +6,7 @@ const links = [
   { to: '/client/post-project', label: 'Post Project', icon: PlusSquare },
   { to: '/client/my-projects', label: 'My Projects', icon: FolderOpen },
   { to: '/client/messages', label: 'Messages', icon: MessageSquare },
+  { to: '/client/profile', label: 'Profile', icon: User },
 ];
 
 export default function ClientLayout() {

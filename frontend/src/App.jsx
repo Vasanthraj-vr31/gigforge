@@ -25,6 +25,7 @@ import ClientDashboardHome from './pages/client/ClientDashboardHome';
 import ClientPostProject from './pages/client/ClientPostProject';
 import ClientMyProjects from './pages/client/ClientMyProjects';
 import ClientMessages from './pages/client/ClientMessages';
+import ClientProfile from './pages/client/ClientProfile';
 import { useAuth } from './context/useAuth';
 import { getRoleBase } from './utils/rolePath';
 
@@ -40,7 +41,6 @@ const HomePage = () => (
     <main className="main-content">
       <HeroSection />
       <Workflow />
-      <ProjectsSection />
     </main>
     <Footer />
   </motion.div>
@@ -89,6 +89,7 @@ function App() {
           <Route path="post-project" element={<ClientPostProject />} />
           <Route path="my-projects" element={<ClientMyProjects />} />
           <Route path="messages" element={<ClientMessages />} />
+          <Route path="profile" element={<ClientProfile />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

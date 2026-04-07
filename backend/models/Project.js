@@ -27,6 +27,10 @@ const projectSchema = new mongoose.Schema({
     ref: 'User',
     default: null,
   },
+  bids: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Bid'
+  }],
   status: {
     type: String,
     // "closed" = legacy (bid accepted); treat like in-progress for completion flow

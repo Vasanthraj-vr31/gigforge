@@ -25,6 +25,9 @@ exports.createBid = async (req, res) => {
       proposal,
     });
 
+    project.bids.push(bid._id);
+    await project.save();
+
     res.status(201).json(bid);
   } catch (error) {
     res.status(500).json({ message: error.message });

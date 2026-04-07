@@ -40,6 +40,17 @@ exports.getContacts = async (req, res) => {
   res.json(users);
 };
 
+exports.getFreelancers = async (req, res) => {
+  try {
+    const freelancers = await User.find({ role: 'freelancer' })
+      .select('name profileImage skills avgRating ratingCount completedProjects bio')
+      .sort({ avgRating: -1 });
+    res.json(freelancers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.updateMe = async (req, res) => {
   const user = await User.findById(req.user._id);
   if (!user) return res.status(404).json({ message: 'User not found' });

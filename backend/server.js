@@ -103,6 +103,11 @@ app.use('/api/v1/bids', bidRoutes);
 app.use('/api/v1/messages', messageRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
 
+// Upload Route & Static Folder
+app.use('/api/v1/upload', require('./routes/uploadRoutes'));
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.send('GigForge API is running...');

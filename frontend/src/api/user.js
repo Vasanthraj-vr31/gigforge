@@ -15,3 +15,8 @@ export async function updateMe(payload) {
   return data;
 }
 
+export async function getFreelancers() {
+  const { data } = await API.get('/user/freelancers');
+  return data;
+}
+

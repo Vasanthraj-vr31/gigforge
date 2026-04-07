@@ -1,10 +1,11 @@
+const mongoose = require('mongoose');
 const Review = require('../models/Review');
 const Project = require('../models/Project');
 const User = require('../models/User');
 
 const recalcUserRating = async (userId) => {
   const stats = await Review.aggregate([
-    { $match: { receiverId: userId } },
+    { $match: { receiverId: new mongoose.Types.ObjectId(userId) } },
     {
       $group: {
         _id: '$receiverId',

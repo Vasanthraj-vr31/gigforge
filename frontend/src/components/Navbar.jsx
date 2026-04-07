@@ -9,9 +9,7 @@ import './Navbar.css';
 
 const navLinks = [
   { label: 'Home', href: '/' },
-  { label: 'Projects', href: '#projects' },
   { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Messages', href: '#messages' },
 ];
 
 const Navbar = () => {

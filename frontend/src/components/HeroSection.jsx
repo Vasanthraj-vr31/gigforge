@@ -37,13 +37,24 @@ const HeroSection = () => {
           <div className="hero-actions">
             <button
               className="btn hero-cta"
-              onClick={() => user ? navigate(getRoleBase(user.role)) : navigate('/signup')}
+              onClick={() => {
+                if (!user) navigate('/login');
+                else if (user.role === 'client') navigate('/client/post-project');
+                else navigate('/freelancer/dashboard');
+              }}
             >
-              {user ? 'Go to Dashboard' : 'Get Started Free'} <ArrowRight size={16} />
+              Post a Project <ArrowRight size={16} />
             </button>
-            <a href="#projects" className="btn btn-outline hero-cta">
-              Browse Projects
-            </a>
+            <button 
+              className="btn btn-outline hero-cta"
+              onClick={() => {
+                if (!user) navigate('/login');
+                else if (user.role === 'freelancer') navigate('/freelancer/projects');
+                else navigate('/client/dashboard');
+              }}
+            >
+              Find Work
+            </button>
           </div>
         </motion.div>
 

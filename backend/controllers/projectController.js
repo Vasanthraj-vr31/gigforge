@@ -30,7 +30,7 @@ exports.getProjects = async (req, res) => {
     if (req.query.status) filter.status = req.query.status;
 
     const projects = await Project.find(filter)
-      .populate('clientId', 'name email')
+      .populate('clientId', 'name email role')
       .populate('assignedFreelancer', 'name email');
     res.json(projects);
   } catch (error) {
@@ -40,7 +40,7 @@ exports.getProjects = async (req, res) => {
 
 exports.getProjectById = async (req, res) => {
   try {
-    const project = await Project.findById(req.params.id).populate('clientId', 'name email');
+    const project = await Project.findById(req.params.id).populate('clientId', 'name email role');
     if (!project) return res.status(404).json({ message: 'Project not found' });
     res.json(project);
   } catch (error) {
@@ -83,6 +83,11 @@ exports.completeProject = async (req, res) => {
 
     project.status = 'completed';
     await project.save();
+
+    const User = require('../models/User');
+    await User.findByIdAndUpdate(project.assignedFreelancer, { $inc: { completedProjects: 1 } });
+    await User.findByIdAndUpdate(project.clientId, { $inc: { completedProjects: 1 } });
+
     res.json(project);
   } catch (error) {
     res.status(500).json({ message: error.message });

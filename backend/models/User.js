@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  completedProjects: {
+    type: Number,
+    default: 0,
+  },
   ratingCount: {
     type: Number,
     default: 0,
