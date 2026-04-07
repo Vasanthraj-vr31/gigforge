@@ -1,0 +1,19 @@
+.skeleton-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skel-row { display: flex; justify-content: space-between; }
+.skel-badge { height: 22px; width: 70px; border-radius: 999px; }
+.skel-budget { height: 22px; width: 80px; border-radius: 4px; }
+.skel-title { height: 20px; width: 80%; border-radius: 4px; }
+.skel-line { height: 14px; width: 100%; border-radius: 4px; }
+.skel-line.short { width: 60%; }
+.skel-tags { display: flex; gap: 6px; }
+.skel-tag { height: 20px; width: 64px; border-radius: 999px; }
+.skel-footer-line { height: 36px; width: 100%; border-radius: var(--radius-sm); margin-top: 8px; }
