@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Briefcase, Loader } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import API from '../api/axios';
+import { useAuth } from '../context/useAuth';
+import { login as loginApi } from '../api/auth';
+import { getRoleBase } from '../utils/rolePath';
 import './AuthPages.css';
 
 const LoginPage = () => {
@@ -35,13 +36,13 @@ const LoginPage = () => {
     if (!validate()) return;
     setLoading(true);
     try {
-      const { data } = await API.post('/auth/login', form);
+      const data = await loginApi(form);
       login(
-        { _id: data._id, name: data.name, email: data.email, role: data.role },
+        { _id: data._id, name: data.name, email: data.email, role: data.role, profileCompleted: data.profileCompleted },
         data.token
       );
       toast.success(`Welcome back, ${data.name}!`);
-      navigate('/dashboard');
+      navigate(getRoleBase(data.role));
     } catch (err) {
       const msg = err.response?.data?.message || 'Login failed. Please try again.';
       toast.error(msg);

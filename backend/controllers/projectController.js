@@ -29,7 +29,9 @@ exports.getProjects = async (req, res) => {
     if (req.query.district) filter.district = req.query.district;
     if (req.query.status) filter.status = req.query.status;
 
-    const projects = await Project.find(filter).populate('clientId', 'name email');
+    const projects = await Project.find(filter)
+      .populate('clientId', 'name email')
+      .populate('assignedFreelancer', 'name email');
     res.json(projects);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -58,6 +60,30 @@ exports.updateProject = async (req, res) => {
 
     const updatedProject = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updatedProject);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.completeProject = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ message: 'Project not found' });
+
+    if (req.user.role !== 'freelancer') {
+      return res.status(403).json({ message: 'Only freelancers can complete projects' });
+    }
+    if (!project.assignedFreelancer || String(project.assignedFreelancer) !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Only assigned freelancer can mark project as completed' });
+    }
+    const canComplete = project.status === 'in-progress' || project.status === 'closed';
+    if (!canComplete) {
+      return res.status(400).json({ message: 'Only active projects can be marked completed' });
+    }
+
+    project.status = 'completed';
+    await project.save();
+    res.json(project);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

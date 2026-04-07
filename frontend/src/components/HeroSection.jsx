@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, MapPin, Users, Briefcase } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
+import { getRoleBase } from '../utils/rolePath';
 import './HeroSection.css';
 
 const stats = [
@@ -36,7 +37,7 @@ const HeroSection = () => {
           <div className="hero-actions">
             <button
               className="btn hero-cta"
-              onClick={() => user ? navigate('/dashboard') : navigate('/signup')}
+              onClick={() => user ? navigate(getRoleBase(user.role)) : navigate('/signup')}
             >
               {user ? 'Go to Dashboard' : 'Get Started Free'} <ArrowRight size={16} />
             </button>

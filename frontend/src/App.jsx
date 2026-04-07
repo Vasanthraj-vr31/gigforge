@@ -1,6 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
+import { Navigate, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import './index.css';
 
 // Layout components
@@ -8,15 +8,25 @@ import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import Workflow from './components/Workflow';
 import ProjectsSection from './components/ProjectsSection';
-import DashboardPanel from './components/DashboardPanel';
-import ChatUI from './components/ChatUI';
 import Footer from './components/Footer';
-import ProtectedRoute from './components/ProtectedRoute';
+import RoleRoute from './components/RoleRoute';
+import FreelancerProfileGuard from './components/FreelancerProfileGuard';
 
 // Pages
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
-import DashboardPage from './pages/DashboardPage';
+import FreelancerLayout from './pages/freelancer/FreelancerLayout';
+import FreelancerHome from './pages/freelancer/FreelancerHome';
+import FreelancerProjects from './pages/freelancer/FreelancerProjects';
+import FreelancerMessages from './pages/freelancer/FreelancerMessages';
+import FreelancerProfile from './pages/freelancer/FreelancerProfile';
+import ClientLayout from './pages/client/ClientLayout';
+import ClientDashboardHome from './pages/client/ClientDashboardHome';
+import ClientPostProject from './pages/client/ClientPostProject';
+import ClientMyProjects from './pages/client/ClientMyProjects';
+import ClientMessages from './pages/client/ClientMessages';
+import { useAuth } from './context/useAuth';
+import { getRoleBase } from './utils/rolePath';
 
 // Home layout
 const HomePage = () => (
@@ -31,14 +41,15 @@ const HomePage = () => (
       <HeroSection />
       <Workflow />
       <ProjectsSection />
-      <DashboardPanel />
-      <ChatUI />
     </main>
     <Footer />
   </motion.div>
 );
 
 function App() {
+  const { user, token } = useAuth();
+  const roleHome = token ? getRoleBase(user?.role) : '/login';
+
   return (
     <>
       <Toaster
@@ -52,14 +63,34 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/dashboard" element={<Navigate to={roleHome} replace />} />
         <Route
-          path="/dashboard"
+          path="/freelancer"
           element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
+            <RoleRoute role="freelancer">
+              <FreelancerLayout />
+            </RoleRoute>
           }
-        />
+        >
+          <Route path="dashboard" element={<FreelancerHome />} />
+          <Route path="projects" element={<FreelancerProfileGuard><FreelancerProjects /></FreelancerProfileGuard>} />
+          <Route path="messages" element={<FreelancerProfileGuard><FreelancerMessages /></FreelancerProfileGuard>} />
+          <Route path="profile" element={<FreelancerProfile />} />
+        </Route>
+        <Route
+          path="/client"
+          element={
+            <RoleRoute role="client">
+              <ClientLayout />
+            </RoleRoute>
+          }
+        >
+          <Route path="dashboard" element={<ClientDashboardHome />} />
+          <Route path="post-project" element={<ClientPostProject />} />
+          <Route path="my-projects" element={<ClientMyProjects />} />
+          <Route path="messages" element={<ClientMessages />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

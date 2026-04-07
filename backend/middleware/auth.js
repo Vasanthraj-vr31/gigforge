@@ -8,16 +8,25 @@ const protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password');
+      const userId = decoded.id || decoded.sub;
+      if (!userId) {
+        return res.status(401).json({ message: 'Not authorized, invalid token payload' });
+      }
+      const dbUser = await User.findById(userId).select('-password');
+      if (!dbUser) {
+        return res.status(401).json({ message: 'Not authorized, user not found' });
+      }
+      req.user = dbUser;
       next();
+      return;
     } catch (error) {
       console.error(error);
-      res.status(401).json({ message: 'Not authorized, token failed' });
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
   }
 
   if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token' });
+    return res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
 

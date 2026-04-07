@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Briefcase, LogOut, LayoutDashboard } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
+import { getRoleBase } from '../utils/rolePath';
 import './Navbar.css';
 
 const navLinks = [
@@ -51,7 +52,7 @@ const Navbar = () => {
         <div className="navbar-actions">
           {user ? (
             <>
-              <Link to="/dashboard" className="btn btn-outline btn-sm">
+              <Link to={getRoleBase(user?.role)} className="btn btn-outline btn-sm">
                 <LayoutDashboard size={15} /> Dashboard
               </Link>
               <button className="btn btn-sm" onClick={handleLogout}>
@@ -95,7 +96,7 @@ const Navbar = () => {
             <div className="mobile-auth">
               {user ? (
                 <>
-                  <Link to="/dashboard" className="btn btn-outline btn-sm" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+                  <Link to={getRoleBase(user?.role)} className="btn btn-outline btn-sm" onClick={() => setMenuOpen(false)}>Dashboard</Link>
                   <button className="btn btn-sm" onClick={handleLogout}>Logout</button>
                 </>
               ) : (

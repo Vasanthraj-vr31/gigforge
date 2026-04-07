@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Briefcase, Loader } from 'lucide-react';
-import API from '../api/axios';
+import { register as registerApi } from '../api/auth';
 import './AuthPages.css';
 
 const SignupPage = () => {
@@ -37,7 +37,7 @@ const SignupPage = () => {
     if (!validate()) return;
     setLoading(true);
     try {
-      await API.post('/auth/register', form);
+      await registerApi(form);
       toast.success('Account created! Please log in.');
       navigate('/login');
     } catch (err) {

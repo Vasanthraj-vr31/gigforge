@@ -22,9 +22,15 @@ const projectSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  assignedFreelancer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+  },
   status: {
     type: String,
-    enum: ['open', 'in-progress', 'completed'],
+    // "closed" = legacy (bid accepted); treat like in-progress for completion flow
+    enum: ['open', 'in-progress', 'closed', 'completed'],
     default: 'open',
   },
   district: {
