@@ -25,12 +25,19 @@ const app = express();
 const server = http.createServer(app);
 
 // Enable CORS
-const allowedOrigins = [
+const fallbackOrigins = [
   'http://localhost:3000', // CRA default
   'http://localhost:5173', // Vite default
   'http://127.0.0.1:3000',
   'http://127.0.0.1:5173',
 ];
+
+const envOrigins = [
+  process.env.CLIENT_URL,
+  ...(process.env.CLIENT_URLS || '').split(',').map((u) => u.trim()),
+].filter(Boolean);
+
+const allowedOrigins = envOrigins.length ? envOrigins : fallbackOrigins;
 
 app.use(
   cors({
