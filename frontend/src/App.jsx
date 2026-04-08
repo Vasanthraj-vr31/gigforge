@@ -26,6 +26,7 @@ import ClientPostProject from './pages/client/ClientPostProject';
 import ClientMyProjects from './pages/client/ClientMyProjects';
 import ClientMessages from './pages/client/ClientMessages';
 import ClientProfile from './pages/client/ClientProfile';
+import ViewFreelancerProfile from './pages/client/ViewFreelancerProfile';
 import { useAuth } from './context/useAuth';
 import { getRoleBase } from './utils/rolePath';
 
@@ -90,6 +91,7 @@ function App() {
           <Route path="my-projects" element={<ClientMyProjects />} />
           <Route path="messages" element={<ClientMessages />} />
           <Route path="profile" element={<ClientProfile />} />
+          <Route path="freelancers/:id" element={<ViewFreelancerProfile />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

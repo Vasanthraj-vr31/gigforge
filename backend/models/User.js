@@ -57,6 +57,31 @@ const userSchema = new mongoose.Schema({
   },
   district: {
     type: String,
+  },
+  companyName: {
+    type: String,
+  },
+  website: {
+    type: String,
+  },
+  phone: {
+    type: String,
+  },
+  title: {
+    type: String,
+  },
+  hourlyRate: {
+    type: Number,
+  },
+  education: {
+    type: String,
+  },
+  languages: {
+    type: [String],
+    default: [],
+  },
+  location: {
+    type: String,
   }
 }, { timestamps: true });
 

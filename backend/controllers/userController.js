@@ -34,7 +34,15 @@ exports.getMe = async (req, res) => {
 };
 
 exports.getContacts = async (req, res) => {
-  const users = await User.find({ _id: { $ne: req.user._id } })
+  const query = { _id: { $ne: req.user._id } };
+  
+  if (req.user.role === 'freelancer') {
+    query.role = 'client';
+  } else if (req.user.role === 'client') {
+    query.role = 'freelancer';
+  }
+
+  const users = await User.find(query)
     .select('_id name role email profileImage')
     .sort({ name: 1 });
   res.json(users);
@@ -55,13 +63,22 @@ exports.updateMe = async (req, res) => {
   const user = await User.findById(req.user._id);
   if (!user) return res.status(404).json({ message: 'User not found' });
 
-  const { profileImage, experience, bio } = req.body;
+  const { profileImage, experience, bio, companyName, website, phone, title, hourlyRate, education, languages, location } = req.body;
   if (typeof profileImage === 'string') user.profileImage = profileImage;
   if (typeof experience === 'string') user.experience = experience;
   if (typeof bio === 'string') user.bio = bio;
+  if (typeof companyName === 'string') user.companyName = companyName;
+  if (typeof website === 'string') user.website = website;
+  if (typeof phone === 'string') user.phone = phone;
+  if (typeof title === 'string') user.title = title;
+  if (typeof education === 'string') user.education = education;
+  if (typeof location === 'string') user.location = location;
+  
+  if (hourlyRate !== undefined) user.hourlyRate = Number(hourlyRate);
 
-  user.skills = normalizeSkills(req.body.skills);
-  user.portfolioLinks = normalizeLinks(req.body.portfolioLinks);
+  if (req.body.skills) user.skills = normalizeSkills(req.body.skills);
+  if (req.body.languages) user.languages = normalizeSkills(req.body.languages);
+  if (req.body.portfolioLinks) user.portfolioLinks = normalizeLinks(req.body.portfolioLinks);
 
   user.profileCompleted = computeProfileCompleted(user);
 
@@ -76,7 +93,24 @@ exports.updateMe = async (req, res) => {
     skills: saved.skills,
     experience: saved.experience,
     bio: saved.bio,
+    companyName: saved.companyName,
+    website: saved.website,
+    phone: saved.phone,
+    title: saved.title,
+    hourlyRate: saved.hourlyRate,
+    education: saved.education,
+    languages: saved.languages,
+    location: saved.location,
     portfolioLinks: saved.portfolioLinks,
   });
 };
 
+exports.getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

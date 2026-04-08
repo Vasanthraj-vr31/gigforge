@@ -1,13 +1,12 @@
-import { FolderOpen, MessageSquare, User } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, MessageSquare, User } from 'lucide-react';
 import RoleDashboardLayout from '../shared/RoleDashboardLayout';
 
 const links = [
-  { to: '/freelancer/projects', label: 'Projects', icon: FolderOpen },
+  { to: '/freelancer/projects', label: 'Browse Projects', icon: FolderOpen },
   { to: '/freelancer/messages', label: 'Messages', icon: MessageSquare },
-  { to: '/freelancer/profile', label: 'Profile', icon: User },
+  { to: '/freelancer/profile', label: 'My Profile', icon: User },
 ];
 
 export default function FreelancerLayout() {
   return <RoleDashboardLayout title="Freelancer" links={links} />;
 }
-

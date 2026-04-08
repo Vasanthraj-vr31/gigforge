@@ -4,6 +4,7 @@ import { getMe, updateMe } from '../../api/user';
 import { getProjects } from '../../api/projects';
 import { useAuth } from '../../context/useAuth';
 import { uploadImage } from '../../api/upload';
+import { Camera, Save, Building2, Globe, Phone, MapPin, FileText, Briefcase } from 'lucide-react';
 
 export default function ClientProfile() {
   const { user, updateUser } = useAuth();
@@ -13,7 +14,13 @@ export default function ClientProfile() {
   const [form, setForm] = useState({
     profileImage: user?.profileImage || '',
     bio: user?.bio || '',
+    companyName: user?.companyName || '',
+    website: user?.website || '',
+    phone: user?.phone || '',
+    location: user?.location || '',
   });
+
+  const set = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }));
 
   const save = async (e) => {
     e.preventDefault();
@@ -21,7 +28,7 @@ export default function ClientProfile() {
     try {
       const updated = await updateMe(form);
       updateUser(updated);
-      toast.success('Profile updated');
+      toast.success('Profile saved successfully!');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save profile');
     } finally {
@@ -35,9 +42,9 @@ export default function ClientProfile() {
     setUploading(true);
     try {
       const { url } = await uploadImage(file);
-      setForm((prev) => ({ ...prev, profileImage: `http://localhost:5000${url}` }));
-      toast.success('Image uploaded');
-    } catch (err) {
+      setForm(prev => ({ ...prev, profileImage: `http://localhost:5000${url}` }));
+      toast.success('Photo updated!');
+    } catch {
       toast.error('Image upload failed');
     } finally {
       setUploading(false);
@@ -53,10 +60,14 @@ export default function ClientProfile() {
         setForm({
           profileImage: me.profileImage || '',
           bio: me.bio || '',
+          companyName: me.companyName || '',
+          website: me.website || '',
+          phone: me.phone || '',
+          location: me.location || '',
         });
         const allProjects = await getProjects();
         const mine = allProjects.filter(
-          (p) => String(p.clientId?._id || p.clientId) === String(user._id)
+          p => String(p.clientId?._id || p.clientId) === String(user._id)
         );
         setProjectsCount(mine.length);
       } catch (err) {
@@ -65,56 +76,142 @@ export default function ClientProfile() {
     })();
   }, [user?._id, updateUser]);
 
+  const initials = user?.name
+    ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+    : '?';
+
   return (
-    <form className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-slate-100" onSubmit={save}>
-      <h2 className="text-2xl font-bold text-slate-800 mb-6">Client Profile</h2>
-      
-      <div className="flex items-center gap-6 mb-6">
-        <div className="w-24 h-24 rounded-full overflow-hidden bg-slate-100 border-2 border-teal-500 shadow-sm">
-          {form.profileImage ? (
-            <img src={form.profileImage} alt="Profile" className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-slate-400">No Image</div>
-          )}
-        </div>
-        <div>
-          <label className="btn btn-outline cursor-pointer relative overflow-hidden">
-            <span>{uploading ? 'Uploading...' : 'Upload Photo'}</span>
-            <input 
-              type="file" 
-              accept="image/*" 
-              className="absolute inset-0 opacity-0 cursor-pointer" 
-              onChange={handleFileChange} 
-              disabled={uploading}
-            />
-          </label>
-        </div>
-      </div>
+    <div style={{ maxWidth: 800 }}>
+      <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', marginBottom: 24, letterSpacing: '-0.02em' }}>
+        My Profile
+      </h1>
 
-      <div className="mb-6 bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider">Posted Projects</h3>
-          <p className="text-3xl font-bold text-teal-600">{projectsCount}</p>
-        </div>
-        <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center text-teal-600">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        </div>
-      </div>
+      <form onSubmit={save}>
+        {/* Hero section */}
+        <div className="profile-hero" style={{ marginBottom: 24 }}>
+          <div className="profile-avatar-wrap">
+            <div className="profile-avatar">
+              {form.profileImage
+                ? <img src={form.profileImage} alt={user?.name} />
+                : <span style={{ fontSize: '2rem', fontWeight: 800 }}>{initials}</span>
+              }
+            </div>
+            <label className="profile-upload-btn" title="Upload photo">
+              <Camera size={14} color="white" />
+              <input type="file" accept="image/*" onChange={handleFileChange} disabled={uploading} />
+            </label>
+          </div>
 
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-slate-700 mb-2">Company/Client Bio</label>
-        <textarea 
-          className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none transition-all" 
-          rows="4"
-          placeholder="Tell freelancers about your company or what you do..." 
-          value={form.bio} 
-          onChange={(e) => setForm({ ...form, bio: e.target.value })} 
-        />
-      </div>
+          <div style={{ flex: 1 }}>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: 4 }}>{user?.name}</h2>
+            <p style={{ color: 'rgba(148,163,184,0.9)', fontSize: '0.9rem' }}>{user?.email}</p>
+            {form.companyName && (
+              <p style={{ color: '#14b8a6', fontWeight: 600, marginTop: 6 }}>{form.companyName}</p>
+            )}
+            <p style={{ marginTop: 10, color: 'rgba(148,163,184,0.7)', fontSize: '0.8rem' }}>
+              {uploading ? 'Uploading photo...' : 'Click the camera icon to change your photo'}
+            </p>
+          </div>
 
-      <button className="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-6 rounded-xl shadow-md transition-all hover:-translate-y-0.5" disabled={saving}>
-        {saving ? 'Saving...' : 'Save Profile'}
-      </button>
-    </form>
+          {/* Stat bubble */}
+          <div style={{
+            background: 'rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 14,
+            padding: '16px 22px',
+            textAlign: 'center',
+            flexShrink: 0,
+          }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: 900, color: '#14b8a6' }}>{projectsCount}</div>
+            <div style={{ fontSize: '0.75rem', color: 'rgba(148,163,184,0.8)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              Posted Projects
+            </div>
+          </div>
+        </div>
+
+        {/* Form Sections */}
+        <div className="gf-card" style={{ marginBottom: 16 }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Building2 size={18} color="#14b8a6" /> Company Information
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div>
+              <label className="gf-label">Company / Client Name</label>
+              <input
+                className="gf-input"
+                value={form.companyName}
+                onChange={set('companyName')}
+                placeholder="Your company or full name"
+              />
+            </div>
+            <div>
+              <label className="gf-label">Phone Number</label>
+              <div style={{ position: 'relative' }}>
+                <Phone size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <input
+                  className="gf-input"
+                  style={{ paddingLeft: 36 }}
+                  value={form.phone}
+                  onChange={set('phone')}
+                  placeholder="+91 9876543210"
+                  type="tel"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="gf-label">Website</label>
+              <div style={{ position: 'relative' }}>
+                <Globe size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <input
+                  className="gf-input"
+                  style={{ paddingLeft: 36 }}
+                  value={form.website}
+                  onChange={set('website')}
+                  placeholder="https://yourcompany.com"
+                  type="url"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="gf-label">Location / District</label>
+              <div style={{ position: 'relative' }}>
+                <MapPin size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <input
+                  className="gf-input"
+                  style={{ paddingLeft: 36 }}
+                  value={form.location}
+                  onChange={set('location')}
+                  placeholder="Chennai, Tamil Nadu"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="gf-card" style={{ marginBottom: 24 }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <FileText size={18} color="#14b8a6" /> About Your Company
+          </h3>
+          <label className="gf-label">Company Bio</label>
+          <textarea
+            className="gf-textarea"
+            rows={5}
+            placeholder="Tell freelancers about your company, the type of projects you run, and what kind of talent you're looking for..."
+            value={form.bio}
+            onChange={set('bio')}
+          />
+          <p style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: 6 }}>
+            {form.bio.length}/500 characters
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button className="gf-btn" type="submit" disabled={saving} style={{ gap: 8 }}>
+            <Save size={16} />
+            {saving ? 'Saving...' : 'Save Profile'}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

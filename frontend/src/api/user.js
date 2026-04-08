@@ -20,3 +20,8 @@ export async function getFreelancers() {
   return data;
 }
 
+export async function getUserById(id) {
+  const { data } = await API.get(`/user/${id}`);
+  return data;
+}
+
